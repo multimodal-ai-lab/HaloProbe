@@ -6,9 +6,6 @@ HaloProbe: Bayesian Detection and Mitigation<br>of Object Hallucinations in Visi
   Reihaneh Zohrabi<sup>*</sup> &middot; Hosein Hasani<sup>*</sup> &middot; Akshita Gupta &middot; Mahdieh Soleymani Baghshah &middot; Anna Rohrbach &middot; Marcus Rohrbach
 </p>
 
-<p align="center">
-  <sup>*</sup> Equal contribution
-</p>
 
 <p align="center">
   <strong>ICML 2026</strong>
@@ -20,9 +17,9 @@ HaloProbe: Bayesian Detection and Mitigation<br>of Object Hallucinations in Visi
   <a href="https://arxiv.org/abs/2604.06165">arXiv:2604.06165</a>
 </p>
 
-<p align="center">
+<!-- <p align="center">
   <strong>Status:</strong> code release coming soon
-</p>
+</p> -->
 
 ---
 
@@ -47,7 +44,7 @@ effectively than state-of-the-art intervention-based methods while preserving fl
 </p>
 
 <p align="center">
-  <em>Given an image and prompt, an LVLM generates a caption. HaloProbe combines <strong>internal features</strong> (fine-grained attention and decoder-confidence statistics) with <strong>external features</strong> (token position and object repetition) through a balanced estimator and a prior estimator to produce token-level hallucination scores — enabling both reliable detection and downstream mitigation without modifying the model.</em>
+  <em>An LVLM generates a caption; HaloProbe combines <strong>internal</strong> decoding signals with <strong>external</strong> caption statistics through a balanced estimator and a prior estimator, yielding token-level hallucination scores for both detection and mitigation.</em>
 </p>
 
 ## Key Insight: Attention Is Confounded
@@ -68,10 +65,9 @@ ones. We show this conclusion is an artifact of aggregation. Two hidden confound
 </p>
 
 The takeaway: **globally averaged image attention is an unreliable hallucination signal.**
-These external factors are not optional nuisances — ignoring them leads to wrong conclusions,
-but naively conditioning on them invites shortcut learning (worsened by severe class
-imbalance, where a trivial "always correct" classifier already exceeds 84% accuracy). HaloProbe
-is designed to resolve exactly this tension.
+Ignoring these factors leads to wrong conclusions, yet naively conditioning on them invites
+shortcut learning — made worse by severe class imbalance, where a trivial "always correct"
+classifier already exceeds 84% accuracy. HaloProbe is built to resolve this tension.
 
 ## HaloProbe: A Bayesian Detection Framework
 
@@ -90,10 +86,9 @@ A Bayesian correction recombines them into the true posterior:
 
 $$p(y{=}1 \mid x_i, x_e) = \frac{f_\theta\, g_\phi}{f_\theta\, g_\phi + (1 - f_\theta)(1 - g_\phi)}$$
 
-Intuitively, each estimator emits a distribution over the two classes; HaloProbe multiplies the
-per-class probabilities and renormalizes. This retains the predictive value of easy external
-features **through posterior correction rather than discarding them**, while remaining robust to
-confounding and distribution shift.
+In practice, each estimator emits per-class probabilities that HaloProbe multiplies and
+renormalizes — keeping the value of easy external features **through posterior correction
+rather than shortcuts**, and staying robust to confounding and distribution shift.
 
 ## Non-Invasive Mitigation
 
@@ -148,10 +143,10 @@ $C_i$ shown below (**lower is better**) — by a large margin across all five mo
   <img src="docs/assets/post_process_results.png" width="49%" alt="Post-process mitigation: CHAIR-I reduction across five LVLMs">
 </p>
 
-Against intervention-based beam-search methods such as OPERA and PAI at the same beam width, the
-intervention-free strategy consistently produces fewer hallucinated objects — showing that
-**modifying internal dynamics is not necessary**: an accurate probe over standard decoded outputs
-is enough to surface fluent, well-grounded captions.
+Against intervention-based beam search (OPERA, PAI) at the same beam width, the intervention-free
+strategy produces fewer hallucinated objects — showing that **modifying internal dynamics is not
+necessary**: an accurate probe over standard decoded outputs suffices to surface fluent, grounded
+captions.
 
 ### Generalization Beyond Object Hallucination
 
@@ -164,15 +159,9 @@ relation-level metrics as well, indicating the framework generalizes beyond obje
 
 ## Highlights
 
-- **A confounding-aware view of attention.** We identify token position and object repetition as
-  hidden confounders that induce Simpson's paradox, and show that globally averaged image
-  attention is an unreliable signal for hallucination detection.
-- **A factorized Bayesian detector.** HaloProbe disentangles internal model signals from external
-  caption statistics via balanced training and posterior correction, achieving state-of-the-art
-  token-level detection.
-- **Non-invasive mitigation that preserves fluency.** HaloProbe-guided beam search and post-hoc
-  editing outperform intervention-based methods on CHAIR while leaving the model's internals — and
-  its generation quality — untouched.
+- **Attention is confounded.** Token position and object repetition induce Simpson's paradox, making globally averaged image attention an unreliable hallucination signal.
+- **Factorized Bayesian detector.** Balanced training and posterior correction disentangle internal signals from external statistics, achieving state-of-the-art token-level detection.
+- **Fluency-preserving mitigation.** HaloProbe-guided beam search and post-hoc editing beat intervention-based methods on CHAIR without touching the model's internals.
 
 ## Code
 
@@ -195,4 +184,4 @@ If you find this work useful, please cite:
 
 ## License
 
-The license will be added together with the code release.
+This project is released under the [MIT License](LICENSE.txt).
